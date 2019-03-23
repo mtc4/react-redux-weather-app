@@ -18,30 +18,37 @@ class Home extends React.Component {
     Navigation.events().bindComponent(this);
 
     this.state = {
-      isLoading: true
+      isLoading: true,
+      latitude: 50.016748, 
+      longitude: 20.990469
     }
+
   }
 
   async componentDidMount() {
     await this.props.getWeatherData();
-    this.setState({isLoading: false});
+    setTimeout(() => {
+      this.setState({isLoading: false});
+    }, 1000);
   }
 
   render() {
+    if (this.state.isLoading) {
+        return (
+          <View style={styles.container}>
+            <Text style={styles.welcome}>Fetching...</Text>
+          </View>
+        )
+    } 
+    
+    const { daily } = this.props.weather.home.data;
+    
     return (
       <View style={styles.container}>
-        <Button
-          onPress={this.props.getWeatherData}
-          title="Refresh"
-          color="#841584"
-        />
-        <Text style={styles.welcome}>Home Screen</Text>
-        { this.props.weather && 
-          <Text style={styles.welcome}>{this.props.weather.home.data}</Text>
-        }
+        <Text style={styles.welcome}>0</Text>
+        <Text style={styles.welcome}>{daily.summary || "brak"}</Text>
       </View>
     )
-    
   }
 }
 

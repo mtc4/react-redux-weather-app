@@ -8,7 +8,7 @@ class RestClient {
 
     setup() {
         axios.defaults.withCredentials = true;
-        axios.defaults.baseURL = config.API_URL;
+        axios.defaults.baseURL = "http://localhost:8081";
     }
 
     async request(type, url, data) {
