@@ -8,9 +8,17 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "connected-react-router": "^6.3.2",
     "react": "16.8.3",
     "react-native": "0.59.1",
-    "react-native-navigation": "^2.15.0"
+    "react-native-navigation": "^2.15.0",
+    "react-redux": "^6.0.1",
+    "react-router": "^5.0.0",
+    "redux": "^4.0.1",
+    "redux-axios-middleware": "^4.0.0",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "7.4.0",
