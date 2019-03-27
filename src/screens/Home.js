@@ -3,12 +3,16 @@ import {
   View,
   Text,
   Button,
+  Animated,
+  ScrollView,
+  RefreshControl,
   StyleSheet,
 } from 'react-native'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as HomeActions from '../actions/HomeActions';
 import { Navigation } from 'react-native-navigation';
+import getStyleSheet from '../styles/';   
 
 class Home extends React.Component {
 
@@ -16,12 +20,17 @@ class Home extends React.Component {
     super(props);
 
     Navigation.events().bindComponent(this);
+    this.springValue = new Animated.Value(0.3)
 
     this.state = {
       isLoading: true,
       latitude: 50.016748, 
-      longitude: 20.990469
+      longitude: 20.990469,
+      darkTheme: false,
+      refreshing: false,
     }
+
+    this.toggleTheme = this.toggleTheme.bind(this);
 
   }
 
@@ -32,11 +41,23 @@ class Home extends React.Component {
     }, 1000);
   }
 
+  toggleTheme() {
+    this.setState({darkTheme: !this.state.darkTheme})
+  };
+
+  _onRefresh() {
+
+  }
+
   render() {
+
+    const styles = getStyleSheet(this.state.darkTheme);
+     const backgroundColor = StyleSheet.flatten(styles.container).backgroundColor;
+
     if (this.state.isLoading) {
         return (
-          <View style={styles.container}>
-            <Text style={styles.welcome}>Fetching...</Text>
+          <View>
+            <Text>Fetching...</Text>
           </View>
         )
     } 
@@ -44,25 +65,26 @@ class Home extends React.Component {
     const { daily } = this.props.weather.home.data;
     
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>0</Text>
-        <Text style={styles.welcome}>{daily.summary || "brak"}</Text>
-      </View>
-    )
+      <ScrollView 
+          style={styles.container}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this._onRefresh}
+            />
+          }
+      >
+        <View style={styles.weather_info}>
+          <Text style={styles.weather_info__temperature}>23°</Text>
+          <Text style={styles.weather_info__location}>Tarnow, Poland</Text>
+          <Text style={styles.weather_info__description}>{daily.summary}</Text>
+        </View>
+        <Button title={backgroundColor} onPress={this.toggleTheme}/>
+      </ScrollView>
+    );
   }
 }
-
-const styles = StyleSheet.create({
-  welcome: {
-    fontSize: 35,
-    fontWeight: 'bold'
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
 
 const mapStateToProps = (state) => {
   return {

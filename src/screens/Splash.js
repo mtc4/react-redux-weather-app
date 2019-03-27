@@ -8,7 +8,7 @@ class Splash extends React.Component {
     return new Promise((resolve) =>
       setTimeout(
         () => { resolve('result') },
-        2000
+        500
       )
     )
   }
