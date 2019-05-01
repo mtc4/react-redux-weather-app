@@ -10,7 +10,8 @@ import { WeatherImages } from '../components/Home/WeatherBackground'
 import Tiles from '../components/Home/Tiles'
 import Week from '../components/Home/Week'
 import Geocoder from 'react-native-geocoding'
-Geocoder.init('-')
+Geocoder.init('{PRIVATE}')
+
 
 class Home extends Component {
 
@@ -24,18 +25,24 @@ class Home extends Component {
       refreshing: false
     }
 
+
     Navigation.events().bindComponent(this)
     this._onRefresh = this._onRefresh.bind(this)
 
-    /*
-    Geocoder.from("Tarnow")
+
+    var location = this.props.location.city + "," + this.props.location.country;
+    Geocoder.from(location)
       .then(json => {
         var location = json.results[0].geometry.location
         this.setState({ latitude: location.lat, longitude: location.lng })
+        this.props.getWeatherData(this.props.weather.latitude, this.props.weather.longitude)
+        this.setState({ isLoading: false })
+
       })
       .catch(error => console.warn(error))
-      */
+
   }
+
 
   get styles () {
     return getStyleSheet(this.props.mode)
@@ -44,24 +51,27 @@ class Home extends Component {
   async componentDidMount () {
     setTimeout(() => {
       this.props.setMode(false)
-      this.setState({ isLoading: false })
     }, 1000)
+    this.setState({ isLoading: false })
+
   }
 
   async _onRefresh () {
     await this.props.getWeatherData()
   }
 
+
   render () {
     console.log(this.props)
     if (this.state.isLoading) {
       return (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-          <ActivityIndicator size="large" color="#000" style={{alignSelf: 'center'}}/>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+          <ActivityIndicator size="large" color="#000" style={{ alignSelf: 'center' }}/>
         </View>
       )
     }
 
+    const location = this.props.location
     const { hourly, currently } = this.props.weather
     return (
       <ScrollView
@@ -81,8 +91,8 @@ class Home extends Component {
           />
 
           <Text style={this.styles.weather_info__temperature}>{currently.apparentTemperature.toFixed()}°</Text>
-          <Text style={this.styles.weather_info__location}>Tarnow, Poland <Icon name="location-on" color="#4F8EF7" style={this.styles.weather_info__location_pin} /></Text>
-          <Text style={this.styles.weather_info__description}>{hourly.summary}  {currently.icon}</Text>
+          <Text style={this.styles.weather_info__location}>{location.city}, {location.country} <Icon name="location-on" color="#4F8EF7" style={this.styles.weather_info__location_pin} /></Text>
+          <Text style={this.styles.weather_info__description}>{hourly.summary}</Text>
         </View>
 
         { /* Kafelki */ }
@@ -105,7 +115,9 @@ class Home extends Component {
 const mapStateToProps = (state) => {
   return {
     weather: state.home.weather,
-    mode: state.mode
+    mode: state.mode,
+    locations: state.favorite,
+    location: state.home.location || { city: "Kraków", country: "Poland"}
   }
 }
 

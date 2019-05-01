@@ -19,9 +19,6 @@ class TopBar extends Component {
   }
 
   uvIndexLevel (index) {
-    if (index <= 2) return "low"
-    if (index >= 3 && index <= 5) return "medium"
-    if (index >= 6 && index <= 7) return "high"
     if (index >= 8) return "very_high"
   }
 

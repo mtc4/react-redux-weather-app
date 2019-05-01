@@ -10,5 +10,5 @@ export function registerScreens () {
   Navigation.registerComponent('DaySummary', () => require('./DaySummary').default)
   Navigation.registerComponentWithRedux('LocationModal', () => require('./LocationModal').default, Provider, store)
   Navigation.registerComponentWithRedux('TopBar', () => require('../components/Home/TopBar').default, Provider, store)
-
+  Navigation.registerComponentWithRedux('SideMenu', () => require('../components/Home/SideMenu').default, Provider, store)
 }

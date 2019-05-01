@@ -2,9 +2,8 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { Navigation } from 'react-native-navigation'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
-import AsyncStorage from '@react-native-community/async-storage';
-import {bindActionCreators} from "redux";
-import {connect} from "react-redux";
+import { bindActionCreators } from "redux"
+import { connect } from "react-redux"
 import * as FavoriteActions from '../actions/FavoriteActions'
 
 class LocationModal extends React.Component {
@@ -29,104 +28,83 @@ class LocationModal extends React.Component {
     }
   }
 
-
-  storeData = async (data) => {
-    try {
-      await AsyncStorage.setItem('@location',  JSON.stringify(data))
-      this.getData()
-    } catch (e) {
-      // saving error
-    }
-  }
-  getData = async () => {
-    var value = null;
-    try {
-      value = await AsyncStorage.getItem('@location')
-      if(value !== null) {
-        console.log(value, 'value')
-        console.log(this.props, 'props')
-      }
-    } catch(e) {
-      // error reading value
-    }
-    return value;
-  }
-
   render () {
+    if (this.state.isLoading) return (<View><Text>ladujhe</Text></View>)
     return <View style={styles.container}>
-        <View style={styles.main}>
+      <View style={styles.main}>
 
-          <GooglePlacesAutocomplete
-            placeholder='Szukaj miejsca'
-            minLength={2}
-            autoFocus={false}
-            returnKeyType={'search'}
-            keyboardAppearance={'light'}
-            listViewDisplayed='auto'
-            fetchDetails={true}
-            renderDescription={row => row.description}
-            onPress={(data, details = null) => {
-              console.log(data)
-              let [city, country] = data.description.split(",");
-              console.log(city, country)
+        <GooglePlacesAutocomplete
+          placeholder='Szukaj miejsca'
+          minLength={2}
+          autoFocus={false}
+          returnKeyType={'search'}
+          keyboardAppearance={'light'}
+          listViewDisplayed='auto'
+          fetchDetails={true}
+          renderDescription={row => row.description}
+          onPress={(data, details = null) => {
+            console.log(data)
+            let [city, country] = data.description.split(",")
+            console.log(city, country)
 
-              this.setState(prevState => ({
-                locations: [...prevState.locations, { city: city, country: country }]
-              }))
 
-              this.storeData(this.state.locations);
-              this.props.addFavoriteLocations(this.state.locations)
+            console.log(city, country)
+            this.setState(prevState => ({
+              locations: [...prevState.locations, { city: city, country: country }]
+            }))
 
-              console.log(this.props, '[locs')
-            }}
+            this.props.addFavoriteLocations(this.state.locations)
 
-            getDefaultValue={() => ''}
+            console.log(this.props.locations, '[locs')
+          }}
 
-            query={{
-              key: 'AIzaSyBCfTEFk1fdP6PL_lT5V9iWkMaoXiMViDA',
-              language: 'en',
-              types: '(cities)'
-            }}
+          getDefaultValue={() => ''}
 
-            styles={{
-              textInputContainer: {
-                borderTopWidth: 0,
-                borderBottomWidth: 0,
-                width: '100%'
-              },
-              textInput: {
-                marginLeft: 0,
-                marginRight: 0,
-                height: 45,
-                width: '100%',
-                fontSize: 18
-              },
-              predefinedPlacesDescription: {
-                color: '#1faadb',
-              },
-              listView: {
-                color: 'black',
-                backgroundColor: 'white'
-              }
-            }}
+          query={{
+            key: '{PRIVATE}',
+            language: 'en',
+            types: '(cities)'
+          }}
 
-            currentLocation={true}
-            currentLocationLabel="Obecna lokalizacja"
-            nearbyPlacesAPI='GooglePlacesSearch'
-            GoogleReverseGeocodingQuery={{
-            }}
-            GooglePlacesSearchQuery={{
-              rankby: 'distance',
-              type: 'cafe'
-            }}
-            GooglePlacesDetailsQuery={{
-              fields: 'formatted_address'
-            }}
-            filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']}
-            debounce={200}
-          />
-          <Text> {this.getData().city}</Text>
-        </View>
+          styles={{
+            textInputContainer: {
+              borderTopWidth: 0,
+              borderBottomWidth: 0,
+              width: '100%'
+            },
+            textInput: {
+              marginLeft: 0,
+              marginRight: 0,
+              height: 45,
+              width: '100%',
+              fontSize: 18
+            },
+            predefinedPlacesDescription: {
+              color: '#1faadb'
+            },
+            listView: {
+              color: 'black',
+              backgroundColor: 'white'
+            }
+          }}
+
+          currentLocation={true}
+          currentLocationLabel="Obecna lokalizacja"
+          nearbyPlacesAPI='GooglePlacesSearch'
+          GoogleReverseGeocodingQuery={{
+          }}
+          GooglePlacesSearchQuery={{
+            rankby: 'distance',
+            type: 'cafe'
+          }}
+          GooglePlacesDetailsQuery={{
+            fields: 'formatted_address'
+          }}
+          filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']}
+          debounce={200}
+        />
+        <Text>miuasto</Text>
+      </View>
     </View>
   }
 }
@@ -152,10 +130,10 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   main: {
-    flex:1,
-    flexDirection:'column',
-    alignItems:'center',
-    justifyContent:'center',
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'white'
   },
   location_input: {
@@ -169,15 +147,14 @@ const styles = StyleSheet.create({
   }
 })
 
-
 const mapStateToProps = (state) => {
   return {
-    locations: state
+    locations: state.favorite
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const { addFavoriteLocations} = FavoriteActions
+  const { addFavoriteLocations } = FavoriteActions
   return {
     ...bindActionCreators({ addFavoriteLocations }, dispatch)
   }

@@ -3,18 +3,19 @@ import {
   Text,
   TouchableOpacity,
   View,
-    Button,
     FlatList,
   ScrollView,
-  ListView,
 } from 'react-native'
 import {Navigation} from 'react-native-navigation'
 import {getStyleSheet} from '../styles/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import AsyncStorage from "@react-native-community/async-storage";
 import * as FavoriteActions from "../actions/FavoriteActions";
+import * as HomeActions from "../actions/HomeActions";
+
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import _ from 'lodash'
+import Geocoder from "react-native-geocoding";
 
 class Favorite extends React.Component {
   constructor (props) {
@@ -34,12 +35,22 @@ class Favorite extends React.Component {
     return getStyleSheet(this.state.darkTheme)
   }
 
-  handleLocationPress = (city) => {
-    console.log("Wybrano ", city)
+  handleLocationPress = (item) => {
+    console.log("Wybrano ", item.city)
+    var location = item.city + "," + item.country;
+    Geocoder.from(location)
+        .then(json => {
+          var loc = json.results[0].geometry.location
+          console.log(loc)
+          this.props.getWeatherData(loc.lat, loc.lng)
+          this.props.setLocation(item)
+        })
+        .catch(error => console.warn(error))
+
   }
 
   handleLocationAdd () {
-    Navigation.push(this.props.componentId, {
+    Navigation.push('App', {
       component: {
         name: 'LocationModal',
         options: {
@@ -53,18 +64,37 @@ class Favorite extends React.Component {
     });
   }
 
+  handleLocationDelete (data) {
+    this.props.deleteFavoriteLocation(data)
+  }
+
   renderRow = ({ item }) => {
     return (
-        <View style={this.styles.loc_item}>
-          <TouchableOpacity onPress={() => this.handleLocationPress(item.city)}>
+        <View style={this.styles.loc_item} key={_.uniqueId('favorite-')}>
+          <TouchableOpacity onPress={() => this.handleLocationPress(item)}>
             <Text style={this.styles.loc_text}>
               {item.city}, {item.country}
             </Text>
           </TouchableOpacity>
-          <Icon active name={"delete-forever"} style={this.styles.loc_remove_icon} size={40} color={"#FF6D55"}/>
+          <Icon.Button active name={"delete-forever"} onPress={() => this.handleLocationDelete(item)} style={this.styles.loc_remove_icon} size={40} color={"#FF6D55"}/>
         </View>
     );
   };
+
+  renderFavorites() {
+    const { locations } = this.props;
+    if (!locations) return (<View><Text>none</Text></View>)
+
+
+   return (<FlatList
+        style={this.styles.loc_content}
+        showsHorizontalScrollIndicator={false}
+        horizontal={false}
+        data={this.props.locations ? locations.favorite : []}
+        renderItem={this.renderRow}
+        keyExtractor={(item, index) => index.toString()}
+    />)
+  }
 
   componentDidMount () {
     this.setState({ isLoading: false })
@@ -75,6 +105,7 @@ class Favorite extends React.Component {
     if(this.state.isLoading) return (<View><Text>Wczytywanie ulubionych...</Text></View>);
     //var listData = [{ city: "Rzeszów", country: "Poland" }, { city: "New York", country: "United States" }, { city: "Bali", country: "Indonesia" }, ];
 
+    console.log(this.props, 'prosp 222')
     return (
       <ScrollView style={{ backgroundColor: 'white', flex: 1 }}>
         {/* Navigation Menu */}
@@ -97,13 +128,9 @@ class Favorite extends React.Component {
         </View>
 
         {/* Locations List */}
-        <FlatList
-            style={this.styles.loc_content}
-            showsHorizontalScrollIndicator={false}
-            horizontal={false}
-            data={this.props}
-            renderItem={this.renderRow}
-        />
+
+            {this.renderFavorites()}
+
       </ScrollView>
     )
   }
@@ -112,14 +139,18 @@ class Favorite extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    locations: state.locations
+    weather: state.home.weather,
+    locations: state.favorite,
+    location: state.location
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const { addFavoriteLocations } = FavoriteActions
+  const { addFavoriteLocations, deleteFavoriteLocation } = FavoriteActions
+  const { getWeatherData, setLocation } = HomeActions
+
   return {
-    ...bindActionCreators({ addFavoriteLocations }, dispatch)
+    ...bindActionCreators({ addFavoriteLocations, getWeatherData, setLocation, deleteFavoriteLocation }, dispatch)
   }
 }
 

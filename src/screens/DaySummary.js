@@ -14,9 +14,9 @@ class DaySummary extends React.Component {
       topBar: {
         title: {
           text: 'Dzień X'
-        },
+        }
       }
-    };
+    }
   }
   componentDidMount () {
     console.log(this.props)

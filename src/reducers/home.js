@@ -1,4 +1,4 @@
-import { SET_WEATHER } from "../constants"
+import { SET_WEATHER, SET_LOCATION } from "../constants"
 
 export const home = (state = [], action) => {
   switch (action.type) {
@@ -6,6 +6,11 @@ export const home = (state = [], action) => {
       return {
         ...state,
         weather: action.data
+      }
+    case SET_LOCATION:
+      return {
+        ...state,
+        location: action.data
       }
     default:
       return state
