@@ -13,7 +13,7 @@ The app is also using Google Maps API to find the nearest weather station, based
 ## Features
 - Basic informations like; sunrise sunset, temperature, wind, humidity, atmosphere pressure, cloudy, maximum temperature.
 - Hourly and weekly forecast, especially hourly weather item for upcoming day.
-- Night Mode [ToDo]
-- Map with global weather conditions [ToDo]
-- Favorites - Adding new locations [ToDo]
-- Hourly forecast for each day in week [ToDo]
+- Night Mode 
+- Map with global weather conditions 
+- Favorites - Adding new locations 
+- Hourly forecast for each day in week 
