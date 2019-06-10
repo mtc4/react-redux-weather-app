@@ -3,6 +3,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
     FlatList,
   ScrollView,
 } from 'react-native'
@@ -11,11 +12,11 @@ import {getStyleSheet} from '../styles/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import * as FavoriteActions from "../actions/FavoriteActions";
 import * as HomeActions from "../actions/HomeActions";
-
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import _ from 'lodash'
 import Geocoder from "react-native-geocoding";
+
 
 class Favorite extends React.Component {
   constructor (props) {
@@ -35,17 +36,35 @@ class Favorite extends React.Component {
     return getStyleSheet(this.state.darkTheme)
   }
 
-  handleLocationPress = (item) => {
-    console.log("Wybrano ", item.city)
+  async handleLocationPress(item) {
     var location = item.city + "," + item.country;
-    Geocoder.from(location)
+    var loc = {};
+    this.setState({ isLoading: true})
+    await Geocoder.from(location)
         .then(json => {
-          var loc = json.results[0].geometry.location
-          console.log(loc)
-          this.props.getWeatherData(loc.lat, loc.lng)
-          this.props.setLocation(item)
+           loc = json.results[0].geometry.location
+          console.log(this.props, "favvv")
         })
         .catch(error => console.warn(error))
+
+    await this.props.getWeatherData(loc.lat, loc.lng)
+    await this.props.setLocation(item)
+
+    var options = {
+      timeZone: this.props.weather.timezone,
+      hour: 'numeric'
+    }
+    var formatter = new Intl.DateTimeFormat([], options)
+    let time = formatter.format(new Date())
+    time = Number(time);
+    let isNightMode = time >= 20 || time <= 5
+    await this.props.setMode(isNightMode)
+    this.setState({ isLoading: false })
+    Navigation.mergeOptions(this.props.componentId, {
+      bottomTabs: {
+        currentTabIndex: 0
+      }
+    });
 
   }
 
@@ -73,18 +92,18 @@ class Favorite extends React.Component {
         <View style={this.styles.loc_item} key={_.uniqueId('favorite-')}>
           <TouchableOpacity onPress={() => this.handleLocationPress(item)}>
             <Text style={this.styles.loc_text}>
-              {item.city}, {item.country}
+              {item.city}
             </Text>
+            <Text>{item.country.trim()}</Text>
           </TouchableOpacity>
-          <Icon.Button active name={"delete-forever"} onPress={() => this.handleLocationDelete(item)} style={this.styles.loc_remove_icon} size={40} color={"#FF6D55"}/>
+          <Icon.Button active name={"delete-forever"} onPress={() => this.handleLocationDelete(item)} style={this.styles.loc_remove_icon} size={40} color={"#FF6D55"} backgroundColor={"transparent"}/>
         </View>
     );
   };
 
   renderFavorites() {
     const { locations } = this.props;
-    if (!locations) return (<View><Text>none</Text></View>)
-
+    if (!locations || locations.length === 0) return (<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}><Text style={{ margin: 30, alignSelf: 'center'}}>Brak zapisanych lokalizacji. Kliknij 'Dodaj lokalizacje', aby dodać do listy.</Text></View>)
 
    return (<FlatList
         style={this.styles.loc_content}
@@ -98,14 +117,19 @@ class Favorite extends React.Component {
 
   componentDidMount () {
     this.setState({ isLoading: false })
-    console.log(this.props, 'props')
   }
 
   render () {
-    if(this.state.isLoading) return (<View><Text>Wczytywanie ulubionych...</Text></View>);
     //var listData = [{ city: "Rzeszów", country: "Poland" }, { city: "New York", country: "United States" }, { city: "Bali", country: "Indonesia" }, ];
 
-    console.log(this.props, 'prosp 222')
+
+    if (this.state.isLoading) {
+       return (
+           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+             <ActivityIndicator siZe={"large"} color={"black"} />
+           </View>
+       )
+    }
     return (
       <ScrollView style={{ backgroundColor: 'white', flex: 1 }}>
         {/* Navigation Menu */}
@@ -129,6 +153,7 @@ class Favorite extends React.Component {
 
         {/* Locations List */}
 
+
             {this.renderFavorites()}
 
       </ScrollView>
@@ -147,10 +172,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   const { addFavoriteLocations, deleteFavoriteLocation } = FavoriteActions
-  const { getWeatherData, setLocation } = HomeActions
+  const { getWeatherData, setLocation, setMode } = HomeActions
 
   return {
-    ...bindActionCreators({ addFavoriteLocations, getWeatherData, setLocation, deleteFavoriteLocation }, dispatch)
+    ...bindActionCreators({ addFavoriteLocations, getWeatherData, setLocation, setMode, deleteFavoriteLocation }, dispatch)
   }
 }
 

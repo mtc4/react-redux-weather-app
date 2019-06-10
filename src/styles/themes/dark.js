@@ -117,5 +117,8 @@ export const darkStyleSheet = StyleSheet.create({
     fontSize: 18,
     marginRight: 5,
     color: colors.white
+  },
+  loc_remove_icon: {
+    backgroundColor: 'transparent'
   }
 })

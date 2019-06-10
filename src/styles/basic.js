@@ -100,14 +100,15 @@ const basic = StyleSheet.create({
     borderRadius: 20,
     paddingLeft: 10,
     paddingRight: 10,
-    width: 95,
-    marginLeft: 15,
+    width: 140,
+    height: 30,
     marginRight: 15,
     flexDirection: 'row',
-    justifyContent: 'center',
+    marginLeft: 50,
     alignItems: 'center'
   },
   uv_index_text: {
+    fontWeight: 'bold'
   },
   background: {
     backgroundColor: '#ffffff'
@@ -148,6 +149,9 @@ const basic = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     marginTop: 10
+  },
+  loc_remove_icon: {
+    backgroundColor: 'transparent'
   }
 })
 export default basic

@@ -1,8 +1,7 @@
 import { SET_WEATHER, SET_MODE, SET_LOCATION } from '../constants'
 
 import RestClient from '../RestClient'
-// import { push } from 'connected-react-router';
-
+import config from '../config';
 const setWeatherData = (data) => {
   return {
     type: SET_WEATHER,
@@ -37,7 +36,7 @@ export const setLocation = (data) => {
 export const getWeatherData = (lat = 50.016748, lng = 20.990469) => {
   return async (dispatch, getState) => {
     try {
-      const resp = await RestClient.request("GET", `https://api.darksky.net/forecast/{PRIVATE}/${lat},${lng}?lang=pl&units=si`)
+      const resp = await RestClient.request("GET", `https://api.darksky.net/forecast/${config.WEATHER_API_KEY}/${lat},${lng}?lang=pl&units=si`)
       const { data } = resp
       if (data) {
         console.log('mam dane')

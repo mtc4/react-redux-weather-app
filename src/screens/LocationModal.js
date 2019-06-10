@@ -5,6 +5,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import * as FavoriteActions from '../actions/FavoriteActions'
+import config from '../config';
 
 class LocationModal extends React.Component {
   constructor (props) {
@@ -28,41 +29,51 @@ class LocationModal extends React.Component {
     }
   }
 
+  async onAddLocationToFavorite(data) {
+    console.log(this.props, 'props')
+    console.log(this.props, 'props')
+    let [city, country] = data.description.split(",")
+    console.log(this.props.locations, 'this.props.locations')
+    let obj = { city: city, country: country };
+
+
+    this.setState({ text: `Dodano ${city} do ulubionych!` })
+    console.log(city, country)
+
+    this.setState(prevState => ({
+      locations: [...prevState.locations, obj]
+    }))
+
+    await this.props.addFavoriteLocations(this.state.locations)
+  }
   render () {
-    if (this.state.isLoading) return (<View><Text>ladujhe</Text></View>)
+    if (this.state.isLoading) return (<View><Text>...</Text></View>)
     return <View style={styles.container}>
       <View style={styles.main}>
-
+        <Text>
+          {this.state.text &&
+          this.state.text
+          }
+        </Text>
         <GooglePlacesAutocomplete
           placeholder='Szukaj miejsca'
           minLength={2}
-          autoFocus={false}
+          autoFocus={true}
           returnKeyType={'search'}
           keyboardAppearance={'light'}
           listViewDisplayed='auto'
           fetchDetails={true}
           renderDescription={row => row.description}
           onPress={(data, details = null) => {
-            console.log(data)
-            let [city, country] = data.description.split(",")
-            console.log(city, country)
+            this.onAddLocationToFavorite(data)
 
-
-            console.log(city, country)
-            this.setState(prevState => ({
-              locations: [...prevState.locations, { city: city, country: country }]
-            }))
-
-            this.props.addFavoriteLocations(this.state.locations)
-
-            console.log(this.props.locations, '[locs')
           }}
 
           getDefaultValue={() => ''}
 
           query={{
-            key: '{PRIVATE}',
-            language: 'en',
+            key: config.GOOGLE_MAPS_API_KEY,
+            language: 'pl',
             types: '(cities)'
           }}
 
@@ -70,14 +81,16 @@ class LocationModal extends React.Component {
             textInputContainer: {
               borderTopWidth: 0,
               borderBottomWidth: 0,
-              width: '100%'
+              width: '100%',
+              height: '10%',
+              backgroundColor: 'white'
             },
             textInput: {
               marginLeft: 0,
               marginRight: 0,
-              height: 45,
+              height: 80,
               width: '100%',
-              fontSize: 18
+              fontSize: 24
             },
             predefinedPlacesDescription: {
               color: '#1faadb'
@@ -103,7 +116,6 @@ class LocationModal extends React.Component {
           filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']}
           debounce={200}
         />
-        <Text>miuasto</Text>
       </View>
     </View>
   }

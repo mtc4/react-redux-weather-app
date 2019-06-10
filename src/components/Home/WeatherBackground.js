@@ -13,16 +13,16 @@ export const WeatherImages = {
   },
   icons: {
     weather: {
-      "clear-day": require("../../assets/img/icons/clear-day.png"),
-      "wind": require("../../assets/img/icons/wind.png"),
-      "sleet": require("../../assets/img/icons/sleet.png"),
-      "thunderstorm": require("../../assets/img/icons/thunderstorm.png"),
-      "cloudy": require("../../assets/img/icons/cloudy.png"),
-      "snow": require("../../assets/img/icons/snow.png"),
-      "partly-cloudy-night": require("../../assets/img/icons/partly-cloudy-night.png"),
-      "partly-cloudy-day": require("../../assets/img/icons/partly-cloudy-day.png"),
-      "clear-night": require("../../assets/img/icons/clear-night.png"),
-      "rain": require("../../assets/img/icons/rain.png")
+      'clear-day': require('../../assets/img/icons/clear-day.png'),
+      'wind': require('../../assets/img/icons/wind.png'),
+      'sleet': require('../../assets/img/icons/sleet.png'),
+      'thunderstorm': require('../../assets/img/icons/thunderstorm.png'),
+      'cloudy': require('../../assets/img/icons/cloudy.png'),
+      'snow': require('../../assets/img/icons/snow.png'),
+      'partly-cloudy-night': require('../../assets/img/icons/partly-cloudy-night.png'),
+      'partly-cloudy-day': require('../../assets/img/icons/partly-cloudy-day.png'),
+      'clear-night': require('../../assets/img/icons/clear-night.png'),
+      'rain': require('../../assets/img/icons/rain.png')
     }
   }
 }

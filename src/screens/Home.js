@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, Image, ActivityIndicator, SafeAreaView, Button, ScrollView, RefreshControl } from 'react-native'
+import { View, Text, Image, ActivityIndicator, ScrollView, RefreshControl } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as HomeActions from '../actions/HomeActions'
@@ -10,11 +10,9 @@ import { WeatherImages } from '../components/Home/WeatherBackground'
 import Tiles from '../components/Home/Tiles'
 import Week from '../components/Home/Week'
 import Geocoder from 'react-native-geocoding'
-Geocoder.init('{PRIVATE}')
-
+Geocoder.init('AIzaSyDVMJ5tIjHBDJj_VUXWmakaslCIIWF5QGg')
 
 class Home extends Component {
-
   constructor (props) {
     super(props)
     this.state = {
@@ -25,44 +23,48 @@ class Home extends Component {
       refreshing: false
     }
 
-
     Navigation.events().bindComponent(this)
     this._onRefresh = this._onRefresh.bind(this)
 
+    var options = {
+      timeZone: this.props.weather.timezone,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    }
+    var formatter = new Intl.DateTimeFormat([], options)
+    console.log('date', formatter.format(new Date()))
 
-    var location = this.props.location.city + "," + this.props.location.country;
+    var location = this.props.location.city + "," + this.props.location.country
     Geocoder.from(location)
       .then(json => {
         var location = json.results[0].geometry.location
         this.setState({ latitude: location.lat, longitude: location.lng })
         this.props.getWeatherData(this.props.weather.latitude, this.props.weather.longitude)
         this.setState({ isLoading: false })
-
       })
       .catch(error => console.warn(error))
-
   }
-
 
   get styles () {
     return getStyleSheet(this.props.mode)
   }
 
   async componentDidMount () {
-    setTimeout(() => {
-      this.props.setMode(false)
-    }, 1000)
     this.setState({ isLoading: false })
-
+    console.log(this.props, 'ok?')
+    await this.props.setMode(this.props.mode)
   }
 
   async _onRefresh () {
     await this.props.getWeatherData()
   }
 
-
   render () {
-    console.log(this.props)
+
     if (this.state.isLoading) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
@@ -113,11 +115,13 @@ class Home extends Component {
 }
 
 const mapStateToProps = (state) => {
+
+  console.log('---STATE', state)
   return {
     weather: state.home.weather,
-    mode: state.mode,
+    mode: state.mode.mode || false,
     locations: state.favorite,
-    location: state.home.location || { city: "Kraków", country: "Poland"}
+    location: state.home.location || { city: "Kraków", country: "Poland" }
   }
 }
 

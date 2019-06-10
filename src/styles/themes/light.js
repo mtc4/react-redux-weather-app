@@ -152,5 +152,8 @@ export const lightStyleSheet = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 10
+  },
+  loc_remove_icon: {
+    backgroundColor: 'transparent'
   }
 })

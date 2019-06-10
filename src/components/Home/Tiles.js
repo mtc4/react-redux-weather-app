@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { timestampToHours } from "../../utils"
-import { FlatList, Text, View } from "react-native"
-import { BoxShadow } from "react-native-shadow"
-import { shadowOpt } from "../../styles"
+import { timestampToHours } from '../../utils'
+import { FlatList, Text, View } from 'react-native'
+import { BoxShadow } from 'react-native-shadow'
+import { shadowOpt } from '../../styles'
 
 class Tiles extends Component {
   constructor (props) {
@@ -37,13 +37,13 @@ class Tiles extends Component {
 
   get weatherData () {
     return [
-      { name: "Wschód słońca", value: timestampToHours(this.today.sunriseTime), unit: '' },
-      { name: "Zachód słońca", value: timestampToHours(this.today.sunsetTime), unit: '' },
-      { name: "Ciśnienie", value: Math.round(this.today.pressure), unit: 'hPa' },
-      { name: "Wiatr", value: this.today.windSpeed, unit: 'km/h' },
-      { name: "Zachmurzenie", value: Math.round(this.today.cloudCover * 100), unit: '%' },
-      { name: "Wilgotność", value: this.today.humidity * 100, unit: '%' },
-      { name: "Temperatura maks.", value: Math.round(this.today.temperatureHigh), unit: '°C' }]
+      { name: 'Wschód słońca', value: timestampToHours(this.today.sunriseTime), unit: '' },
+      { name: 'Zachód słońca', value: timestampToHours(this.today.sunsetTime), unit: '' },
+      { name: 'Ciśnienie', value: Math.round(this.today.pressure), unit: 'hPa' },
+      { name: 'Wiatr', value: this.today.windSpeed, unit: 'km/h' },
+      { name: 'Zachmurzenie', value: Math.round(this.today.cloudCover * 100), unit: '%' },
+      { name: 'Wilgotność', value: this.today.humidity * 100, unit: '%' },
+      { name: 'Temperatura maks.', value: Math.round(this.today.temperatureHigh), unit: '°C' }]
   }
 
   render () {

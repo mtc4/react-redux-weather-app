@@ -4,7 +4,6 @@ export const favorite = (state = [], action) => {
   switch (action.type) {
     case SET_FAVORITE:
       console.log(action.data)
-
       return {
         ...state,
         favorite: [...state.favorite || [], action.data[0]]
